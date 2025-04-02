@@ -10,15 +10,17 @@ const bot = new TelegramBot(token);
 const app = express();
 app.use(express.json());
 
-// Основной массив пользователей (обычные и скрытые)
+// Основной массив пользователей
 const users = [
-  { name: "👤 Иван", id: 123456789, username: "ivan_username" },
+  { name: "👤 @АРТ", id: 1472395097, username: "@Amontearx" },
+  { name: "👤 АРТ", id: 1472395097, username: "Amontearx" },
+  { name: "👤 Иван", id: 123456789, username: null },
   { name: "👤 Мария", id: 987654321, username: "maria_username" },
-  { name: "👤 Алексей", id: 112233445, username: "alexey_username" },
+  { name: "👤 Алексей", id: 112233445, username: null },
   { name: "👤 Ольга", id: 556677889, username: "olga_username" },
-  { name: "👤 Дмитрий", id: 998877665, username: "dmitry_username" },
+  { name: "👤 Дмитрий", id: 998877665, username: null },
   { name: "👤 Елена", id: 223344556, username: "elena_username" },
-  { name: "👤 🔒 Тайный Агент", id: 111222333, username: "secret_agent" },
+  { name: "👤 🔒 Тайный Агент", id: 111222333, username: null },
   { name: "👤 🔒 Неизвестный", id: 444555666, username: "unknown_user" }
 ];
 
@@ -38,7 +40,7 @@ bot.onText(/\/start/, (msg) => {
   // Создаём кнопки для всех пользователей
   const keyboard = {
     inline_keyboard: users.map(user => [
-      { text: user.name, callback_data: user.username }
+      { text: user.name, callback_data: user.id.toString() } // Передаём ID вместо username
     ])
   };
 
@@ -50,13 +52,20 @@ bot.onText(/\/start/, (msg) => {
 // Обработчик нажатий на кнопки
 bot.on("callback_query", (query) => {
   const chatId = query.message.chat.id;
-  const username = query.data;
+  const userId = parseInt(query.data); // Получаем ID пользователя
 
-  // Ищем пользователя по username
-  const user = users.find(u => u.username === username);
+  // Ищем пользователя по ID
+  const user = users.find(u => u.id === userId);
 
   if (user) {
-    bot.sendMessage(chatId, `@${user.username}`, { parse_mode: "Markdown" });
+    if (user.username) {
+      // Если у пользователя есть username — упоминаем через @
+      bot.sendMessage(chatId, `@${user.username}`);
+    } else {
+      // Если нет username — упоминаем по ID (с MarkdownV2)
+      const mention = `[${user.name}](tg://user?id=${user.id})`.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&'); // Экранируем символы
+      bot.sendMessage(chatId, mention, { parse_mode: "MarkdownV2" });
+    }
   } else {
     bot.sendMessage(chatId, "Ошибка: Пользователь не найден.");
   }
