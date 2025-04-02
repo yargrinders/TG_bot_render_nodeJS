@@ -35,14 +35,9 @@ function getRandomMessage() {
   return messages[randomIndex];
 }
 
-// Функция для группировки кнопок по 2 в ряд с кнопкой "Позвать всех" сверху
+// Функция для группировки кнопок по 2 в ряд
 function generateKeyboard(users) {
-  const keyboard = [
-    // Добавляем кнопку "Позвать всех" в первую строку
-    [{ text: "🔊 Позвать всех", callback_data: "call_all" }]
-  ];
-  
-  // Добавляем остальные кнопки пользователей
+  const keyboard = [];
   for (let i = 0; i < users.length; i += 2) {
     if (users[i + 1]) {
       // Если есть пара, добавляем две кнопки в ряд
@@ -88,48 +83,28 @@ bot.onText(/\/start/, (msg) => {
 // Обработчик нажатий на кнопки
 bot.on("callback_query", (query) => {
   const chatId = query.message.chat.id;
-  const callbackData = query.data;
+  const userId = parseInt(query.data);
   
   // Получаем информацию о пользователе, который вызвал колбэк
   const callerId = query.from.id;
   const callerFromArray = users.find(u => u.id === callerId);
   const callerUsername = callerFromArray ? callerFromArray.username : (query.from.username || "пользователь");
-  const callerName = callerFromArray 
-    ? callerFromArray.name.replace("👤 ", "") 
-    : (query.from.first_name || "пользователь");
   
-  // Если нажата кнопка "Позвать всех"
-  if (callbackData === "call_all") {
-    // Создаем список упоминаний всех пользователей
-    const mentionList = users
-      .filter(user => user.username) // Только те, у кого есть username
-      .map(user => `@${user.username}`)
-      .join(" ");
-    
-    // Отправляем сообщение со всеми упоминаниями
-    bot.sendMessage(
-      chatId, 
-      `🚨 📢 У кого есть желание сегодня поиграть?! ${mentionList} - Вызывает ${callerName}`
-    );
-  } else {
-    // Обычное поведение для других кнопок
-    const userId = parseInt(callbackData);
-    const user = users.find(u => u.id === userId);
+  const user = users.find(u => u.id === userId);
 
-    if (user) {
-      if (user.username) {
-        // Получаем случайное сообщение и заменяем плейсхолдеры
-        let message = getRandomMessage()
-          .replace('@$username', `@${user.username}`)
-          .replace('@$caller_name', `@${callerUsername}`);
-        
-        bot.sendMessage(chatId, message);
-      } else {
-        bot.sendMessage(chatId, `[${user.name}](tg://user?id=${user.id})`, { parse_mode: "MarkdownV2" });
-      }
+  if (user) {
+    if (user.username) {
+      // Получаем случайное сообщение и заменяем плейсхолдеры
+      let message = getRandomMessage()
+        .replace('@$username', `@${user.username}`)
+        .replace('@$caller_name', `@${callerUsername}`);
+      
+      bot.sendMessage(chatId, message);
     } else {
-      bot.sendMessage(chatId, "Ошибка: Пользователь не найден.");
+      bot.sendMessage(chatId, `[${user.name}](tg://user?id=${user.id})`, { parse_mode: "MarkdownV2" });
     }
+  } else {
+    bot.sendMessage(chatId, "Ошибка: Пользователь не найден.");
   }
 });
 
