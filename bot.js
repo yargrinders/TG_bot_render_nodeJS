@@ -109,27 +109,30 @@ bot.on("callback_query", (query) => {
     // Отправляем сообщение со всеми упоминаниями
     bot.sendMessage(
       chatId, 
-      `🚨 📢 У кого есть желание сегодня поиграть?! ${mentionList} - Вызывает ${callerName}`
+      `📢 У кого есть желание сегодня поиграть?! ${mentionList} - Вызывает ${callerName}`
     );
-  } else {
-    // Обычное поведение для других кнопок
-    const userId = parseInt(callbackData);
-    const user = users.find(u => u.id === userId);
+    
+    // Важно! Добавляем return, чтобы прервать выполнение остального кода
+    return;
+  }
+  
+  // Обычное поведение для других кнопок
+  const userId = parseInt(callbackData);
+  const user = users.find(u => u.id === userId);
 
-    if (user) {
-      if (user.username) {
-        // Получаем случайное сообщение и заменяем плейсхолдеры
-        let message = getRandomMessage()
-          .replace('@$username', `@${user.username}`)
-          .replace('@$caller_name', `@${callerUsername}`);
-        
-        bot.sendMessage(chatId, message);
-      } else {
-        bot.sendMessage(chatId, `[${user.name}](tg://user?id=${user.id})`, { parse_mode: "MarkdownV2" });
-      }
+  if (user) {
+    if (user.username) {
+      // Получаем случайное сообщение и заменяем плейсхолдеры
+      let message = getRandomMessage()
+        .replace('@$username', `@${user.username}`)
+        .replace('@$caller_name', `@${callerUsername}`);
+      
+      bot.sendMessage(chatId, message);
     } else {
-      bot.sendMessage(chatId, "Ошибка: Пользователь не найден.");
+      bot.sendMessage(chatId, `[${user.name}](tg://user?id=${user.id})`, { parse_mode: "MarkdownV2" });
     }
+  } else {
+    bot.sendMessage(chatId, "Ошибка: Пользователь не найден.");
   }
 });
 
