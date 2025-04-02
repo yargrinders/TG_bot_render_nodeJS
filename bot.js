@@ -10,53 +10,63 @@ const bot = new TelegramBot(token);
 const app = express();
 app.use(express.json());
 
-// Массив пользователей (добавь реальных)
+// Массив пользователей
 const users = [
   { name: "👤 АРТ", id: 1472395097, username: "Amontearx" },
+  { name: "👤 nikolai kerankov", id: 7160070476, username: "nikolai" },
+  { name: "👤 aleksshtanko6", id: 5297933809, username: "aleksshtanko6" },
+  { name: "👤 poltorashkaexe", id: 7884535660, username: "poltorashkaexe" },
   { name: "👤 Yargrinders", id: 910176803, username: "Yargrinders" },
-  { name: "👤 R.G", id: 284203271, username: "R_G" },
-  { name: "👤 nikolai kerankov", id: 7160070476, username: "nikolai" }
+  { name: "👤 R.G", id: 284203271, username: "R_G" }
 ];
+
+// Функция для группировки кнопок по 2 в ряд
+function generateKeyboard(users) {
+  const keyboard = [];
+  for (let i = 0; i < users.length; i += 2) {
+    if (users[i + 1]) {
+      // Если есть пара, добавляем две кнопки в ряд
+      keyboard.push([
+        { text: users[i].name, callback_data: users[i].id.toString() },
+        { text: users[i + 1].name, callback_data: users[i + 1].id.toString() }
+      ]);
+    } else {
+      // Если последний без пары, добавляем его в одиночку
+      keyboard.push([{ text: users[i].name, callback_data: users[i].id.toString() }]);
+    }
+  }
+  return keyboard;
+}
 
 // Устанавливаем webhook
 bot.setWebHook(`${webhookUrl}/bot${token}`);
 
 // Обрабатываем запросы от Telegram
 app.post(`/bot${token}`, (req, res) => {
-    bot.processUpdate(req.body);
-    res.sendStatus(200);
+  bot.processUpdate(req.body);
+  res.sendStatus(200);
 });
 
 // Команда /start с кнопками
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
 
-  // Кнопки с пользователями
-  const keyboard = {
-    inline_keyboard: users.map(user => [
-      { text: user.name, callback_data: user.id.toString() }
-    ])
-  };
-
   bot.sendMessage(chatId, "Выбери пользователя для упоминания:", {
-    reply_markup: keyboard
+    reply_markup: { inline_keyboard: generateKeyboard(users) }
   });
 });
 
 // Обработчик нажатий на кнопки
 bot.on("callback_query", (query) => {
   const chatId = query.message.chat.id;
-  const userId = parseInt(query.data); 
+  const userId = parseInt(query.data);
 
-  // Ищем пользователя по ID
   const user = users.find(u => u.id === userId);
 
   if (user) {
     if (user.username) {
-      // Если у пользователя есть username — тегаем @username
       bot.sendMessage(chatId, `@${user.username}`);
     } else {
-      // Если нет username — тегаем через ID (работает в группах)
       bot.sendMessage(chatId, `[${user.name}](tg://user?id=${user.id})`, { parse_mode: "MarkdownV2" });
     }
   } else {
@@ -66,5 +76,5 @@ bot.on("callback_query", (query) => {
 
 // Запускаем сервер
 app.listen(port, () => {
-    console.log(`Бот запущен на порту ${port}`);
+  console.log(`Бот запущен на порту ${port}`);
 });
