@@ -21,6 +21,20 @@ const users = [
   { name: "👤 Ярик2", id: 5199037185, username: "Yargrinders2" },
 ];
 
+// Массив сообщений для случайного выбора
+const messages = [
+  "Привет @$username, играем? 🚀 - Тебя вызывает @$caller_name",
+  "@$username, присоединяйся к игре! 🎮 - Тебя вызывает @$caller_name",
+  "Эй, @$username! Время для игры! ⏰ - Тебя вызывает @$caller_name",
+  "@$username, как на счет поиграть в Fortnite ?! 👋 - Тебя вызывает @$caller_name"
+];
+
+// Функция для получения случайного сообщения
+function getRandomMessage() {
+  const randomIndex = Math.floor(Math.random() * messages.length);
+  return messages[randomIndex];
+}
+
 // Функция для группировки кнопок по 2 в ряд
 function generateKeyboard(users) {
   const keyboard = [];
@@ -61,7 +75,7 @@ bot.onText(/\/start/, (msg) => {
     ? userFromArray.name.replace("👤 ", "") // Убираем эмодзи из имени 
     : (msg.from.first_name || "пользователь");
   
-  bot.sendMessage(chatId, `Привет, ${userName} 🤖\n\nВыбери действие:`, {
+  bot.sendMessage(chatId, `Привет, ${userName} 🤖\n\nВыберите действие:`, {
     reply_markup: { inline_keyboard: generateKeyboard(users) }
   });
 });
@@ -70,12 +84,22 @@ bot.onText(/\/start/, (msg) => {
 bot.on("callback_query", (query) => {
   const chatId = query.message.chat.id;
   const userId = parseInt(query.data);
-
+  
+  // Получаем информацию о пользователе, который вызвал колбэк
+  const callerId = query.from.id;
+  const callerFromArray = users.find(u => u.id === callerId);
+  const callerUsername = callerFromArray ? callerFromArray.username : (query.from.username || "пользователь");
+  
   const user = users.find(u => u.id === userId);
 
   if (user) {
     if (user.username) {
-      bot.sendMessage(chatId, `@${user.username}`);
+      // Получаем случайное сообщение и заменяем плейсхолдеры
+      let message = getRandomMessage()
+        .replace('@$username', `@${user.username}`)
+        .replace('@$caller_name', `@${callerUsername}`);
+      
+      bot.sendMessage(chatId, message);
     } else {
       bot.sendMessage(chatId, `[${user.name}](tg://user?id=${user.id})`, { parse_mode: "MarkdownV2" });
     }
