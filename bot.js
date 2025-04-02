@@ -50,8 +50,17 @@ app.post(`/bot${token}`, (req, res) => {
 // Команда /start с кнопками
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
-
-  bot.sendMessage(chatId, "Выбери пользователя для упоминания:", {
+  const userId = msg.from.id;
+  
+  // Ищем пользователя в массиве по ID
+  const userFromArray = users.find(u => u.id === userId);
+  
+  // Используем имя из массива, если пользователь найден, иначе используем имя из Telegram или "пользователь"
+  const userName = userFromArray 
+    ? userFromArray.name.replace("👤 ", "") // Убираем эмодзи из имени 
+    : (msg.from.first_name || "пользователь");
+  
+  bot.sendMessage(chatId, `Привет, ${userName} 🤖\n\nВыбери действие:`, {
     reply_markup: { inline_keyboard: generateKeyboard(users) }
   });
 });
