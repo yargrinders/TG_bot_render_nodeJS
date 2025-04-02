@@ -17,7 +17,8 @@ const users = [
   { name: "👤 Саша", id: 5297933809, username: "aleksshtanko6" },
   { name: "👤 Витя", id: 7884535660, username: "poltorashkaexe" },
   { name: "👤 Ральф", id: 284203271, username: "R_G" },
-  { name: "👤 Ярик", id: 910176803, username: "Yargrinders" }
+  { name: "👤 Ярик", id: 910176803, username: "Yargrinders" },
+  { name: "👤 Ярик2", id: 5199037185, username: "Yargrinders2" },
 ];
 
 // Функция для группировки кнопок по 2 в ряд
