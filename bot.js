@@ -12,12 +12,7 @@ app.use(express.json());
 
 // Основной массив пользователей
 const users = [
-  { name: "👤 @АРТ", id: 1472395097, username: "@Amontearx" },
   { name: "👤 АРТ", id: 1472395097, username: "Amontearx" },
-  { name: "👤 Иван", id: 123456789, username: null },
-  { name: "👤 Мария", id: 987654321, username: "maria_username" },
-  { name: "👤 Алексей", id: 112233445, username: null },
-  { name: "👤 Ольга", id: 556677889, username: "olga_username" },
   { name: "👤 Дмитрий", id: 998877665, username: null },
   { name: "👤 Елена", id: 223344556, username: "elena_username" },
   { name: "👤 🔒 Тайный Агент", id: 111222333, username: null },
