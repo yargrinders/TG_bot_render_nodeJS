@@ -10,14 +10,16 @@ const bot = new TelegramBot(token);
 const app = express();
 app.use(express.json());
 
-// Массив пользователей
+// Основной массив пользователей (обычные и скрытые)
 const users = [
   { name: "👤 Иван", id: 123456789, username: "ivan_username" },
   { name: "👤 Мария", id: 987654321, username: "maria_username" },
   { name: "👤 Алексей", id: 112233445, username: "alexey_username" },
   { name: "👤 Ольга", id: 556677889, username: "olga_username" },
   { name: "👤 Дмитрий", id: 998877665, username: "dmitry_username" },
-  { name: "👤 Елена", id: 223344556, username: "elena_username" }
+  { name: "👤 Елена", id: 223344556, username: "elena_username" },
+  { name: "👤 🔒 Тайный Агент", id: 111222333, username: "secret_agent" },
+  { name: "👤 🔒 Неизвестный", id: 444555666, username: "unknown_user" }
 ];
 
 // Устанавливаем webhook
@@ -33,7 +35,7 @@ app.post(`/bot${token}`, (req, res) => {
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
 
-  // Создаём кнопки с пользователями
+  // Создаём кнопки для всех пользователей
   const keyboard = {
     inline_keyboard: users.map(user => [
       { text: user.name, callback_data: user.username }
@@ -50,7 +52,14 @@ bot.on("callback_query", (query) => {
   const chatId = query.message.chat.id;
   const username = query.data;
 
-  bot.sendMessage(chatId, `@${username}`, { parse_mode: "Markdown" });
+  // Ищем пользователя по username
+  const user = users.find(u => u.username === username);
+
+  if (user) {
+    bot.sendMessage(chatId, `@${user.username}`, { parse_mode: "Markdown" });
+  } else {
+    bot.sendMessage(chatId, "Ошибка: Пользователь не найден.");
+  }
 });
 
 // Запускаем сервер
