@@ -10,13 +10,12 @@ const bot = new TelegramBot(token);
 const app = express();
 app.use(express.json());
 
-// Основной массив пользователей
+// Массив пользователей (добавь реальных)
 const users = [
   { name: "👤 АРТ", id: 1472395097, username: "Amontearx" },
-  { name: "👤 Дмитрий", id: 998877665, username: null },
-  { name: "👤 Елена", id: 223344556, username: "elena_username" },
-  { name: "👤 🔒 Тайный Агент", id: 111222333, username: null },
-  { name: "👤 🔒 Неизвестный", id: 444555666, username: "unknown_user" }
+  { name: "👤 Yargrinders", id: 910176803, username: "Yargrinders" },
+  { name: "👤 R.G", id: 284203271, username: "R_G" },
+  { name: "👤 nikolai kerankov", id: 7160070476, username: "nikolai" }
 ];
 
 // Устанавливаем webhook
@@ -32,10 +31,10 @@ app.post(`/bot${token}`, (req, res) => {
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
 
-  // Создаём кнопки для всех пользователей
+  // Кнопки с пользователями
   const keyboard = {
     inline_keyboard: users.map(user => [
-      { text: user.name, callback_data: user.id.toString() } // Передаём ID вместо username
+      { text: user.name, callback_data: user.id.toString() }
     ])
   };
 
@@ -47,19 +46,18 @@ bot.onText(/\/start/, (msg) => {
 // Обработчик нажатий на кнопки
 bot.on("callback_query", (query) => {
   const chatId = query.message.chat.id;
-  const userId = parseInt(query.data); // Получаем ID пользователя
+  const userId = parseInt(query.data); 
 
   // Ищем пользователя по ID
   const user = users.find(u => u.id === userId);
 
   if (user) {
     if (user.username) {
-      // Если у пользователя есть username — упоминаем через @
+      // Если у пользователя есть username — тегаем @username
       bot.sendMessage(chatId, `@${user.username}`);
     } else {
-      // Если нет username — упоминаем по ID (с MarkdownV2)
-      const mention = `[${user.name}](tg://user?id=${user.id})`.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&'); // Экранируем символы
-      bot.sendMessage(chatId, mention, { parse_mode: "MarkdownV2" });
+      // Если нет username — тегаем через ID (работает в группах)
+      bot.sendMessage(chatId, `[${user.name}](tg://user?id=${user.id})`, { parse_mode: "MarkdownV2" });
     }
   } else {
     bot.sendMessage(chatId, "Ошибка: Пользователь не найден.");
