@@ -29,13 +29,6 @@ const messages = [
   "@$username, как на счет поиграть в Fortnite ?! 👋 - Тебя вызывает @$caller_name"
 ];
 
-// Переменная для отслеживания состояния бота
-const botStatus = {
-  startTime: new Date(),
-  lastPingTime: new Date(),
-  totalPings: 0
-};
-
 // Функция для получения случайного сообщения
 function getRandomMessage() {
   const randomIndex = Math.floor(Math.random() * messages.length);
@@ -72,55 +65,6 @@ bot.setWebHook(`${webhookUrl}/bot${token}`);
 app.post(`/bot${token}`, (req, res) => {
   bot.processUpdate(req.body);
   res.sendStatus(200);
-});
-
-// Добавляем эндпоинт для UptimeRobot
-app.get('/ping', (req, res) => {
-  const now = new Date();
-  botStatus.totalPings++;
-  
-  // Вычисляем время с последнего пинга
-  const timeSinceLastPing = now - botStatus.lastPingTime;
-  botStatus.lastPingTime = now;
-  
-  // Отправляем информацию о состоянии бота
-  res.status(200).json({
-    status: 'ok',
-    message: 'Bot is running',
-    uptime: Math.floor((now - botStatus.startTime) / 1000) + ' seconds',
-    since_last_ping: Math.floor(timeSinceLastPing / 1000) + ' seconds',
-    total_pings: botStatus.totalPings,
-    server_time: now.toISOString()
-  });
-  
-  console.log(`[UptimeRobot] Bot pinged at ${now.toISOString()} (ping #${botStatus.totalPings})`);
-});
-
-// Добавляем корневой эндпоинт для проверки работоспособности сервера
-app.get('/', (req, res) => {
-  res.status(200).send(`
-    <html>
-      <head>
-        <title>Telegram Bot Status</title>
-        <style>
-          body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
-          .status { color: green; font-weight: bold; }
-          .info { margin: 20px; padding: 10px; background: #f0f0f0; display: inline-block; text-align: left; }
-        </style>
-      </head>
-      <body>
-        <h1>Telegram Bot Server</h1>
-        <p>Status: <span class="status">Online</span></p>
-        <div class="info">
-          <p>Server started: ${botStatus.startTime.toISOString()}</p>
-          <p>Last ping: ${botStatus.lastPingTime.toISOString()}</p>
-          <p>Total pings: ${botStatus.totalPings}</p>
-          <p>Uptime: ${Math.floor((new Date() - botStatus.startTime) / 1000)} seconds</p>
-        </div>
-        <p><small>Use /ping endpoint for UptimeRobot monitoring</small></p>
-      </body>
-    </html>
-  `);
 });
 
 // Команда /start с кнопками
@@ -195,6 +139,4 @@ bot.on("callback_query", (query) => {
 // Запускаем сервер
 app.listen(port, () => {
   console.log(`Бот запущен на порту ${port}`);
-  console.log(`Мониторинг доступен по адресу ${webhookUrl}/ping`);
-  console.log(`Статус бота доступен по адресу ${webhookUrl}`);
 });
