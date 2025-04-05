@@ -1,1 +1,0 @@
-curl -F "url=https://tg-bot-render-nodejs.onrender.com/bot7456562915:AAHqsjNCS_8CEjbhNFVVoGRYiGV24oD4KJQ" "https://api.telegram.org/bot7456562915:AAHqsjNCS_8CEjbhNFVVoGRYiGV24oD4KJQ/setWebhook"
