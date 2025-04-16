@@ -305,7 +305,7 @@ bot.onText(/\/start/, (msg) => {
   
   const userName = getUserName(userId, msg.from);
   
-  bot.sendMessage(chatId, `Привет, ${userName} 🤖\n\nВыберите действие:`, {
+  bot.sendMessage(chatId, `Привет, ${userName} \n\nВыбери действие - 🤖:`, {
     reply_markup: { inline_keyboard: generateKeyboard(users) }
   });
 });
