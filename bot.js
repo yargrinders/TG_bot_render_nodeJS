@@ -19,7 +19,7 @@ const users = [
   { name: "⚡ Саша", id: 5297933809, username: "aleksshtanko6" }, // Молния, скорость
   { name: "🎮 Витя", id: 7884535660, username: "poltorashkaexe" }, // Геймер, веселье
   { name: "🕶️ Ральф", id: 284203271, username: "R_G" }, // Крутой стиль, очки
-  { name: "👩‍💻 Ярик", id: 910176803, username: "Yargrinders" }, // Звезда, яркость
+  { name: "👨‍💻 Ярик", id: 910176803, username: "Yargrinders" }, // Звезда, яркость
   // { name: "👤 АРТ", id: 1472395097, username: "Amontearx" },
   // { name: "👤 Ярик2", id: 5199037185, username: "Yargrinders2" },
 ];
