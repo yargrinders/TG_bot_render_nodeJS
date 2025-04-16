@@ -9,6 +9,7 @@ const webhookUrl = process.env.WEBHOOK_URL; // URL сервера
 const bot = new TelegramBot(token);
 const app = express();
 app.use(express.json());
+app.use(express.static('public'));
 
 // ======= ДАННЫЕ И СОСТОЯНИЕ =======
 
@@ -146,28 +147,105 @@ app.get('/', (req, res) => {
   const now = new Date();
   const uptimeSeconds = Math.floor((now - botStatus.startTime) / 1000);
   const uptimeFormatted = formatUptime(uptimeSeconds);
+  const lastPingDelta = Math.floor((now - botStatus.lastPingTime) / 1000);
+  const lastPingFormatted = lastPingDelta > 60 
+    ? `${Math.floor(lastPingDelta / 60)} мин ${lastPingDelta % 60} сек назад` 
+    : `${lastPingDelta} сек назад`;
+  
+  // Форматируем дату и время в удобочитаемом виде
+  const formatDate = (date) => {
+    return date.toLocaleString('ru-RU', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
+  };
   
   res.status(200).send(`
-    <html>
+    <!DOCTYPE html>
+    <html lang="ru">
       <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Telegram Bot Status</title>
-        <style>
-          body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
-          .status { color: green; font-weight: bold; }
-          .info { margin: 20px; padding: 15px; background: #f0f0f0; border-radius: 8px; display: inline-block; text-align: left; }
-          h1 { color: #0088cc; }
-        </style>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="/styles/bot-status.css">
       </head>
       <body>
-        <h1>Telegram Bot Server</h1>
-        <p>Status: <span class="status">Online</span></p>
-        <div class="info">
-          <p><strong>Server started:</strong> ${botStatus.startTime.toISOString()}</p>
-          <p><strong>Last ping:</strong> ${botStatus.lastPingTime.toISOString()}</p>
-          <p><strong>Total pings:</strong> ${botStatus.totalPings}</p>
-          <p><strong>Uptime:</strong> ${uptimeFormatted}</p>
+        <div class="container">
+          <div class="header">
+            <h1>Telegram Bot Status</h1>
+            <p class="subtitle">Мониторинг состояния бота</p>
+            <div class="status-indicator">
+              <div class="status-dot"></div>
+              Онлайн
+            </div>
+          </div>
+          
+          <div class="card">
+            <div class="card-header">Общая информация</div>
+            <div class="card-body">
+              <div class="info-grid">
+                <div class="info-item">
+                  <div class="info-label">Запущен</div>
+                  <div class="info-value" id="start-time" data-start-time="${botStatus.startTime.toISOString()}">${formatDate(botStatus.startTime)}</div>
+                </div>
+                <div class="info-item">
+                  <div class="info-label">Время работы</div>
+                  <div class="info-value" id="uptime-value">${uptimeFormatted}</div>
+                </div>
+                <div class="info-item">
+                  <div class="info-label">Последний пинг</div>
+                  <div class="info-value">${formatDate(botStatus.lastPingTime)} (${lastPingFormatted})</div>
+                </div>
+                <div class="info-item">
+                  <div class="info-label">Всего пингов</div>
+                  <div class="info-value">${botStatus.totalPings.toLocaleString()}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="card">
+            <div class="card-header">Системная информация</div>
+            <div class="card-body">
+              <div class="info-grid">
+                <div class="info-item">
+                  <div class="info-label">Текущее время сервера</div>
+                  <div class="info-value">${formatDate(now)}</div>
+                </div>
+                <div class="info-item">
+                  <div class="info-label">Порт сервера</div>
+                  <div class="info-value">${port}</div>
+                </div>
+                <div class="info-item">
+                  <div class="info-label">Node.js версия</div>
+                  <div class="info-value">${process.version}</div>
+                </div>
+                <div class="info-item">
+                  <div class="info-label">Платформа</div>
+                  <div class="info-value">${process.platform}</div>
+                </div>
+              </div>
+              <div class="info-item" style="margin-top: 1rem;">
+                <div class="info-label">Endpoint для мониторинга</div>
+                <div class="info-value highlight">/ping</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="footer">
+            <p>© ${new Date().getFullYear()} Telegram Bot Server</p>
+            <p id="last-update">Обновлено: ${new Date().toLocaleTimeString()}</p>
+          </div>
         </div>
-        <p><small>Use /ping endpoint for UptimeRobot monitoring</small></p>
+        
+        <script src="/scripts/bot-status.js"></script>
       </body>
     </html>
   `);

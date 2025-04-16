@@ -1,0 +1,138 @@
+:root {
+    --primary: #0088cc;
+    --secondary: #1e3a8a;
+    --success: #10b981;
+    --bg-light: #f9fafb;
+    --bg-card: #ffffff;
+    --text: #1f2937;
+    --text-secondary: #6b7280;
+    --border: #e5e7eb;
+  }
+  
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: 'Roboto', sans-serif;
+    background-color: var(--bg-light);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .container {
+    max-width: 600px;
+    width: 100%;
+  }
+  
+  .header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  
+  h1 {
+    color: var(--primary);
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .subtitle {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .status-indicator {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background-color: var(--success);
+    color: white;
+    border-radius: 9999px;
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+  }
+  
+  .status-dot {
+    width: 10px;
+    height: 10px;
+    background-color: white;
+    border-radius: 50%;
+    margin-right: 8px;
+    animation: pulse 1.5s infinite;
+  }
+  
+  @keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+  }
+  
+  .card {
+    background-color: var(--bg-card);
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+  
+  .card-header {
+    padding: 1rem 1.5rem;
+    background-color: var(--primary);
+    color: white;
+    font-weight: 500;
+    font-size: 1.1rem;
+  }
+  
+  .card-body {
+    padding: 1.5rem;
+  }
+  
+  .info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  
+  .info-item {
+    margin-bottom: 1rem;
+  }
+  
+  .info-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.25rem;
+  }
+  
+  .info-value {
+    font-weight: 500;
+    font-size: 1rem;
+  }
+  
+  .highlight {
+    color: var(--primary);
+    font-weight: 700;
+  }
+  
+  .footer {
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin-top: auto;
+    padding-top: 2rem;
+  }
+  
+  /* Responsive */
+  @media (max-width: 640px) {
+    .info-grid {
+      grid-template-columns: 1fr;
+    }
+  }
