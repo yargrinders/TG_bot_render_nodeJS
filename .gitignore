@@ -1,0 +1,26 @@
+# Исключение папки node_modules
+node_modules/
+
+# Исключение файла .env
+.env
+
+# Исключение файла README
+README.md
+readme
+
+# Дополнительные общие правила для Node.js проектов
+.DS_Store
+*.log
+npm-debug.log*
+yarn-error.log*
+
+# Правила для IDE и редакторов
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Остальные общие правила
+dist/
+build/
+coverage/
