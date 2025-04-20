@@ -87,7 +87,14 @@ function getUserName(userId, defaultUser = {}) {
   const userFromArray = users.find(u => u.id === userId);
   
   if (userFromArray) {
-    return userFromArray.name.replace("👤 ", "");
+    return userFromArray.name
+    .replace("👤 ", "")
+    .replace("🔥 ", "")
+    .replace("⚡ ", "")
+    .replace("🎮 ", "")
+    .replace("🕶️ ", "")
+    .replace("👨‍💻 ", "")
+    .trim(); // Удаляем пробелы в начале и конце
   }
   
   return defaultUser.first_name || "пользователь";
@@ -331,7 +338,7 @@ bot.on("callback_query", (query) => {
     // Отправляем сообщение со всеми упоминаниями
     bot.sendMessage(
       chatId, 
-      `📢 У кого есть желание сегодня поиграть?! ${mentionList} - Вызывает ${callerName}`
+      `📢 У кого есть желание сегодня поиграть?! ${mentionList} - Вызывает @${callerName}`
     );
     
     return;
